@@ -1,0 +1,18 @@
+Vivado Simulator 2019.1
+Copyright 1986-1999, 2001-2019 Xilinx, Inc. All Rights Reserved.
+Running: C:/Xilinx/Vivado/2019.1/bin/unwrapped/win64.o/xelab.exe -wto 9375202186814936866b8110b0c825f3 --incr --debug typical --relax --mt 2 --maxdelay -L xil_defaultlib -L simprims_ver -L secureip --snapshot tb_wrapper_time_synth -transport_int_delays -pulse_r 0 -pulse_int_r 0 -pulse_e 0 -pulse_int_e 0 xil_defaultlib.tb_wrapper xil_defaultlib.glbl -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module xil_defaultlib.multiplexor(BUS_WIDTH=4)
+Compiling module xil_defaultlib.tb_multiplexor(ANCHO=4)
+Compiling module xil_defaultlib.multiplexor
+Compiling module xil_defaultlib.tb_multiplexor
+Compiling module xil_defaultlib.multiplexor(BUS_WIDTH=16)
+Compiling module xil_defaultlib.tb_multiplexor(ANCHO=16)
+Compiling module xil_defaultlib.tb_wrapper
+Compiling module xil_defaultlib.glbl
+Built simulation snapshot tb_wrapper_time_synth
