@@ -96,30 +96,42 @@ El módulo *multiplexor* representa un multiplexor de 4 entradas a 1 salida con 
 
 #### 1. Encabezado del módulo
 ```SystemVerilog
-module multiplexor #(parameter BUS_WIDTH = 8)
-  (input [BUS_WIDTH-1:0] datos_in_0,
-   input [BUS_WIDTH-1:0] datos_in_1,
-   input [BUS_WIDTH-1:0] datos_in_2,
-   input [BUS_WIDTH-1:0] datos_in_3,
-   input [1:0] seleccion,
-   output reg [BUS_WIDTH-1:0] dato_out
+module mux4 #(parameter WIDTH = 8) (
+    input clk,
+    input rst,
+    input  logic [WIDTH-1:0] in0, 
+    input  logic [WIDTH-1:0] in1, 
+    input  logic [WIDTH-1:0] in2,
+    input  logic [WIDTH-1:0] in3,
+    input  logic [1:0] sel,
+    output logic [WIDTH-1:0] out
 );
+    always_comb begin
+        case (sel)
+            2'b00: out = in0;
+            2'b01: out = in1;
+            2'b10: out = in2;
+            2'b11: out = in3;
+            default: out = {WIDTH{1'bx}};
+        endcase
+    end
+endmodule
 ```
 #### 2. Parámetros
 
-- `BUS_WIDTH`: Parámetro que define el ancho del bus de datos en el multiplexor. Tiene un valor predeterminado de 8, pero en el test bench este toma valores de 4, 8 y 16.
+- `WIDTH`: Parámetro que define el ancho del bus de datos en el multiplexor. Tiene un valor predeterminado de 8, pero en el test bench este toma valores de 4, 8 y 16.
 
 
 #### 3. Entradas y salidas
 
-- `datos_in_0`, `datos_in_1`, `datos_in_2`, `datos_in_3`: Entradas de datos al multiplexor.
-- `seleccion`: Entrada de 2 bits que especifica qué entrada del multiplexor se seleccionará.
-- `dato_out`: Salida del módulo, representa el dato seleccionado por el multiplexor según la entrada `seleccion`.
+- `in_0`, `in_1`, `in_2`, `in_3`: Entradas de datos al multiplexor.
+- `sel`: Entrada de 2 bits que especifica qué entrada del multiplexor se seleccionará.
+- `out`: Salida del módulo, representa el dato seleccionado por el multiplexor según la entrada `seleccion`.
 
 
 #### 4. Criterios de diseño
 
-Como parte del diseño planteado, se desarrolló un diagrama que ilustrata el sistema junto con sus entradas y salidas. 
+Para el diseño propuesto, se desarrolló un diagrama que ilustrata el sistema con las entradas y salidas. 
 
 La imagen adjunta ilustra a nivel de bloques el sistema:
 
