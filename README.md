@@ -151,50 +151,109 @@ Y la tabla de verdad que determina su comportamiento corresponde a:
 El siguiente fragmento de código muestra una simplificación del test bench con la finalidad de poder visualizar su esctructura global y funcionamiento.
 
 ```SystemVerilog
-module tb_multiplexor #(parameter ANCHO = 8) ();
-
-    //Definición de entradas y salidas
-
-    multiplexor #(ANCHO) dut(data_0_i, data_1_i, data_2_i, data_3_i, select, data_o);
-
-    initial begin
-        $display("Empezando simulación para un ancho de: %d", ANCHO);
-   
-        for (int i = 0; i < 50; i=i+1) begin
-            data_0_i = $random;
-            data_1_i = $random;
-            data_2_i = $random;
-            data_3_i = $random;
-
-            select = 2'b00; // Se pone la señal de selección en 00
-            #5; // Esperar 10 unidades de tiempo        
+module mux4tb;
     
-            // Verificar que data_o y data_0_i son iguales 
-            if (data_o != data_0_i) begin
-                $display("Error en iteración %0d: El valor a la entrada es %b y el obtenido a la salida fue %b, no son iguales", i, data_0_i, data_o);
-                $finish;
-            end
+    // Parámetros de prueba
+    parameter NUM_SAMPLES = 50; // Número de datos de prueba
 
-            // Aqui se encuentran el resto de casos del selector
+    // Señales de prueba
+    logic clk, rst;
+    logic [1:0] sel;
+    logic [3:0] in0_4, in1_4, in2_4, in3_4, out_4;
+    logic [7:0] in0_8, in1_8, in2_8, in3_8, out_8;
+    logic [15:0] in0_16, in1_16, in2_16, in3_16, out_16;
+    
+    // Instancias del DUT (Multiplexor 4:1 para 4, 8 y 16 bits)
+    mux4 #(4) uut4 (
+        .clk(clk), .rst(rst),
+        .in0(in0_4), .in1(in1_4), .in2(in2_4), .in3(in3_4),
+        .sel(sel), .out(out_4)
+    );
+
+    mux4 #(8) uut8 (
+        .clk(clk), .rst(rst),
+        .in0(in0_8), .in1(in1_8), .in2(in2_8), .in3(in3_8),
+        .sel(sel), .out(out_8)
+    );
+
+    mux4 #(16) uut16 (
+        .clk(clk), .rst(rst),
+        .in0(in0_16), .in1(in1_16), .in2(in2_16), .in3(in3_16),
+        .sel(sel), .out(out_16)
+    );
+
+    // Generación del reloj (10 ns de período)
+    always #5 clk = ~clk;
+
+    // Proceso de prueba
+    initial begin
+        clk = 0;
+        rst = 1;
+        #10 rst = 0; // Desactiva reset después de 10 ns
+
+        $display("=== Inicio de pruebas ===");
+
+        // Pruebas para cada ancho de datos y cada selección de entrada
+        for (sel = 0; sel < 4; sel++) begin
+            $display("Probando sel = %b", sel);
+
+            for (int i = 0; i < NUM_SAMPLES; i++) begin
+                // Generar datos aleatorios
+                in0_4 = $urandom_range(0, 15);
+                in1_4 = $urandom_range(0, 15);
+                in2_4 = $urandom_range(0, 15);
+                in3_4 = $urandom_range(0, 15);
+
+                in0_8 = $urandom_range(0, 255);
+                in1_8 = $urandom_range(0, 255);
+                in2_8 = $urandom_range(0, 255);
+                in3_8 = $urandom_range(0, 255);
+
+                in0_16 = $urandom_range(0, 65535);
+                in1_16 = $urandom_range(0, 65535);
+                in2_16 = $urandom_range(0, 65535);
+                in3_16 = $urandom_range(0, 65535);
+
+                #5; // Esperar 5 ns para estabilizar señales
+
+                // Verificación de salida
+                case (sel)
+                    2'b00: begin
+                        if (out_4 !== in0_4) $display("ERROR 4-bit: esperado=%h, obtenido=%h", in0_4, out_4);
+                        if (out_8 !== in0_8) $display("ERROR 8-bit: esperado=%h, obtenido=%h", in0_8, out_8);
+                        if (out_16 !== in0_16) $display("ERROR 16-bit: esperado=%h, obtenido=%h", in0_16, out_16);
+                    end
+                    2'b01: begin
+                        if (out_4 !== in1_4) $display("ERROR 4-bit: esperado=%h, obtenido=%h", in1_4, out_4);
+                        if (out_8 !== in1_8) $display("ERROR 8-bit: esperado=%h, obtenido=%h", in1_8, out_8);
+                        if (out_16 !== in1_16) $display("ERROR 16-bit: esperado=%h, obtenido=%h", in1_16, out_16);
+                    end
+                    2'b10: begin
+                        if (out_4 !== in2_4) $display("ERROR 4-bit: esperado=%h, obtenido=%h", in2_4, out_4);
+                        if (out_8 !== in2_8) $display("ERROR 8-bit: esperado=%h, obtenido=%h", in2_8, out_8);
+                        if (out_16 !== in2_16) $display("ERROR 16-bit: esperado=%h, obtenido=%h", in2_16, out_16);
+                    end
+                    2'b11: begin
+                        if (out_4 !== in3_4) $display("ERROR 4-bit: esperado=%h, obtenido=%h", in3_4, out_4);
+                        if (out_8 !== in3_8) $display("ERROR 8-bit: esperado=%h, obtenido=%h", in3_8, out_8);
+                        if (out_16 !== in3_16) $display("ERROR 16-bit: esperado=%h, obtenido=%h", in3_16, out_16);
+                    end
+                endcase
+            end
         end
 
-        $display("Simulación terminada correctamente para un ancho de: %d", ANCHO);
+        $display("=== Pruebas finalizadas ===");
+        $stop;
     end
-endmodule
 
-// Módulo que envuelve el test bench para cambiar el valor de ANCHO
-module tb_wrapper;
-    tb_multiplexor #(4) tb_4();
-    tb_multiplexor #(8) tb_8();
-    tb_multiplexor #(16) tb_16();
 endmodule
 
 ```
 
 
-Este test bench es utilizado para verificar el comportamiento del módulo multiplexor con diferentes configuraciones de ancho de bus. En el bloque initial, se inicia una simulación. Se generan datos aleatorios para las entradas del módulo (data_0_i, data_1_i, data_2_i, data_3_i) en un bucle de 50 iteraciones. Para cada iteración, se cambia la señal de selección (select) para probar cada una de las entradas del multiplexor. Se espera un cierto número de unidades de tiempo después de cambiar la selección y se verifica que la salida del módulo (data_o) coincida con la entrada correspondiente y si hay alguna discrepancia, se imprime un mensaje de error y la simulación se detiene. Al final de la simulación, se muestra un mensaje indicando si la simulación terminó correctamente para un determinado ancho de bus (ANCHO).
+Este test bench es utilizado para verificar el comportamiento del módulo multiplexor con diferentes configuraciones de ancho de bus. En el bloque initial, se inicia una simulación. Se generan datos aleatorios para las entradas del módulo (in0_4, in1_4, in2_4, in3_4) en un bucle de 50 iteraciones. Para cada iteración, se cambia la señal de selección (sel) para probar cada una de las entradas del multiplexor. Se espera un cierto número de unidades de tiempo después de cambiar la selección y se verifica que la salida del módulo (data_o) coincida con la entrada correspondiente y si hay alguna discrepancia, se imprime un mensaje de error y la simulación se detiene. Al final de la simulación, se muestra un mensaje indicando si la simulación terminó correctamente para un determinado ancho de bus (ANCHO).
 
-Luego de la definición del bucle, se crea un módulo *tb_wrapper* que instancia tres test benches con diferentes anchuras de bus (4, 8, y 16). Esto permite ejecutar la simulación para varias configuraciones de anchura del bus del módulo multiplexor en una única simulación.
+Luego de la definición del bucle, se instancia tres test benches con diferentes anchuras de bus (4, 8, y 16). Esto permite ejecutar la simulación para varias configuraciones de anchura del bus del módulo multiplexor en una única simulación.
 
 Luego de correr el test bench, se muestra en la terminal:
 ```
