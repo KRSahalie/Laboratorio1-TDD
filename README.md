@@ -677,133 +677,247 @@ Botón Pulsado = 1000 , Display Activo = 0111, Valor en Switches = 1111000000000
 
 ### 3.4 Sumador y Ruta crítica
 
-El módulo *rca* genera una estructura de múltiples sumadores completos en cascada, de manera que, da los resultados de la adición de una secuencia binaria de n bits. El RCA incluye sumadores completos, por lo que el acarreo se generará en cada etapa del sumador según bit.
+Problema: Crear un sumador completo de 1 bit y diseñar un Ripple-Carry Adder (RCA) con tamaño de palabra parametrizable.
 
-#### 1. Encabezado del módulo
+Organización: Se deben plantear la tablas de verdad del sumador completo de 1 bit, así, obtener los mapas de karnaugh y plantear las ecuaciones para obtener el resultado, el RCA consiste en un ciclo del sumador anterior.
+
+#### 1.Código final Bit Adder
 ```SystemVerilog
-module rca #( 
-    parameter WORD_SIZE = 64
-)(
-    input [WORD_SIZE-1:0] A,
-    input [WORD_SIZE-1:0] B, 
-    input Cin,
-    input clk,
+ `timescale 1ns / 1ps
 
-    output [WORD_SIZE:0] S, 
-    output Cout
+module BitAdder 
+(     
+    input logic    a,                              
+                   b,                              
+                   c,                                
+    output logic   cout,                            
+                   sum 
+ );                            
+    
+    assign cout = (b & c) |                       
+                  (b & a) |                      
+                  (a & c); 
+                   
+    assign sum =  (~b & ~a &  c) |              
+                  ( b & ~a & ~c) |              
+                  ( b &  a &  c) |
+                  (~b &  a & ~c);
+endmodule
+```
+Seguidamente el RCA consiste en iterar el modulo anterior N veces según los bits requeridos.
+
+#### 2. Código final del RCA
+```SystemVerilog
+module RippleCarryAdder #(parameter N = 8)(
+    input  logic [N-1:0] i_a,                  
+    input  logic [N-1:0] i_b,
+    output logic [N:0] o_suma);
+ 
+    
+    logic [N:0]   carry;                        
+    logic [N-1:0]   sum;
+   
+    assign carry[0] = 1'b0;                                               
+    
+    genvar i;                                     
+    generate
+        for (i = 0; i < N; i=i+1)             
+            begin
+                BitAdder param(              
+                .a         (i_a[i]),
+                .b         (i_b[i]),
+                .c         (carry[i]),
+                .cout      (carry[i+1]),
+                .sum       (sum[i])
+                );
+            end
+    endgenerate
+    
+    assign o_suma = {carry[N], sum};            
+endmodule
+```
+Para finalizar el CLA es prácticamente lo mismo, la diferencia esta en los propagadores y generadores que creamos para poder saber el comportamiento pasada la suma.
+
+#### 3. Código final del LCA
+```SystemVerilog
+module CarryLookAhead#(parameter N = 8)
+(
+    input  logic [N-1:0] i_a,                 
+    input  logic [N-1:0] i_b,
+    output logic [N:0]   o_suma
 );
-```
-#### 2. Parámetros
-```
-parameter WORD_SIZE //Establece la cantidad de bits para el tamaño de palabra. 8, 16, 32, 64...
-```
+    
+    logic [N:0]   carry;
+    logic [N-1:0] sum;                         
+    logic [N-1:0] pro;                           
+    logic [N-1:0] gen;                           
+    
+    genvar i;                                      
+    generate                                        
+        for (i = 0; i<N; i=i+1)
+            begin
+               BitAdder param(      
+                .a         (i_a[i]),             
+                .b         (i_b[i]),
+                .c        (carry[i]),
+                .cout       (),
+                .sum        (sum[i])
+                );
+            end
+    endgenerate
+    
+    assign carry[0] = 1'b0;                         
+    
+    genvar j;
+    generate                                       
+        for (j = 0; j<N; j=j+1)            
+            begin
+                assign gen[j]       = i_a[j] & i_b[j];
+                assign pro[j]       = i_a[j] | i_b[j];
+                assign carry[j+1] = gen[j] | (pro[j] & carry[j]);
+            end
+    endgenerate
 
-#### 3. Entradas y salidas
-```SystemVerilog
-    input [WORD_SIZE-1:0] A, //Recibe la entrada A de tamaño WORD_SIZE-1:0
-    input [WORD_SIZE-1:0] B, //Recibe la entrada B de tamaño WORD_SIZE-1:0
-    input Cin, //Recibe el carry de entrada, por definición es de un 1 bit.
-    input clk, //Reloj para obtener reporte de tiempos de propagación, slack y más.
-
-    output [WORD_SIZE:0] S, //Salida del resultado de suma, es de tamaño WORD_SIZE:0 para considerar el overflow.
-    output Cout //Es el valor del carry de salida, por definición es de un 1 bit.
-```
-
-#### 4. Criterios de diseño
-
-Para diseñar el Ripple Carry Adder fue necesario diseñar un módulo de sumador completo (FA) el cual sería instanciado dentro del RCA. Por tanto, para el diseño del full adder, se consideró la tabla de verdad que modela su comportamiento de salida S en función de las entradas A y B.
-
-<div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio4/images/FA_truth_table.png" alt="Tabla de verdad para sumador completo en el bit 0">
-	
-Tabla de verdad para sumador completo en el bit 0.
-
-</div>
-
-Con base en lo anterior, el sumador completo se describe tal que:
-
-```SystemVerilog
-module FullAdder(
-    input a, b, cin, // Entradas de un 1 bit del sumador completo
-    output s, cout // Salida de un 1 bit de la suma y acarreo
-);
-// Definición de la suma y el acarreo mediante compuertas lógicas
-assign s = a ^ b ^ cin;
-assign cout = (a & b) | (a & cin) | (b & cin);
+    assign o_suma = {carry[N], sum};        
 
 endmodule
 ```
 
-De tal manera que, la instancia del módulo *FullAdder* dentro del módulo *rca*, se observa como:
-```SystemVerilog
+#### 4. Criterios de diseño
 
-wire [WORD_SIZE:0] local_Cout; // Salida local para los carrys intermedios
-generate
-    for (i = 0; i < WORD_SIZE; i = i + 1) begin : bit_
-        FullAdder FA_ (
-            .a(A[i]), // La entrada a del FA conectada con la entrada A del RCA
-            .b(B[i]), // La entrada b del FA conectada con la entrada B del RCA
-            .cin(local_Cout[i]), // Conexión de los carrys intermedios a ser carrys de entradas, de tamaño WORD_SIZE:0 por el overflow
-            .s(S[i]), // La salida s del FA conectada con la salida S del RCA
-            .cout(local_Cout[i+1]) // cout será el cin del siguiente sumador
-        ); 
-    end
-endgenerate
+Organización: Se deben plantear la tablas de verdad del sumador completo de 1 bit, así, obtener los mapas de karnaugh y plantear las ecuaciones para obtener el resultado, el RCA consiste en un ciclo del sumador anterior.
 
-assign S[WORD_SIZE] = local_Cout[WORD_SIZE]; //El bit overflow es el bit de acarreo (portado por local_cout) del último sumador
-```
+
+### ME HACE FALTA AGREGAR LAS TABLAS DE LA VERDA
 
 #### 5. Testbench
+```
+module RippleCarryAdder128_TB;
 
-En relación con el testbench del módulo *rca*, la primera prueba que se le realizó fue el testeo de la capacidad de generar resultados correctos para todas las posibles combinaciones (incluidas aquellas que generan overflow) para una palabra de 8 bits. En consencuencia, los resultados obtenidos fueron los siguientes:
+    parameter N = 128;
+    
+    logic [N -1:0] i_a;
+    logic [N -1:0] i_b;
+    logic [N :0] o_suma;
+    
+    
+    
+    RippleCarryAdder #
+    (
+    .N (N)
+    )
+    test
+    (
+    .i_a            (i_a),
+    .i_b            (i_b),
+    .o_suma         (o_suma)
+    );
+    
+    
+    initial begin   
+        repeat (10) begin
+            
+            i_a = 128'h35F8A2E71B3D0C49B2DCE1D789263F2A;
+            i_b = 128'hA9C7D8F502E1346B5798C84A76BDF4A3;
+            //DFC0DB7C24F440B0A2D0A042EF60DDEA
+            
+            #100;
+            i_a = 128'h874E5A214F1D20C3BBE6071E5240F86C;
+            i_b = 128'h2ECFBC91D78351A1E497D5AAEC9FDF8B;
+            //BDADE7B3C6A0716530553D7C3FA17FF7
+            #100;
+            i_a = 128'hF56A0CEFA8B1F5C3F020A12A7589E42D;
+            i_b = 128'hFBD8A7266611F3DBE90A0B8B024A493;
+            //14A7F8BB5F1D0F1F4E0AAA3D1CD3E8C1A
+        end
+    #10;
+    
+    $finish;
+    
+    end
+    
+    RippleCarryAdder_TB TEST();
+    CarryLookAhead_TB TEST2();
 
+endmodule
 
-<div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio4/images/testbench rca 8bit combi.png" alt="Todas las combinaciones de sumas para palabra de 8 bits. Puntero posicionado en caso overflow.">
-	
-Combinaciones de suma para palabra de 8 bits. Puntero posicionado en caso overflow.
-	
-</div>
+ module RippleCarryAdder_TB;
 
-Posteriormente, la segunda prueba consistió en parametrizar el RCA a 64 bits y modificar sus constraints para obtener una frecuencia de reloj de 10MHz y otra de 100MHz. Lo anterior permite verificar si el sumador es capaz de generar resultados correctos debido al segmento de autoverificación descrito en el módulo de test_bench.
+    parameter N = 8;
+    
+    logic [N -1:0] i_a;
+    logic [N -1:0] i_b;
+    logic [N :0] o_suma;
+    
+    
+    
+    RippleCarryAdder #
+    (
+    .N (N)
+    )
+    test
+    (
+    .i_a            (i_a),
+    .i_b            (i_b),
+    .o_suma         (o_suma)
+    );
+    
+    
+    initial begin   
+        repeat (10) begin
+            
 
-<div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio4/images/error rca 10mhz.png" alt="Tiempo en el que se generó un error con 10MHz.">
-	
-Tiempo en el que se generó un error con 10MHz.
-	
-</div>
+            i_a = 8'h00;
+            i_b = 8'hff;
+            
+            #100;
+            i_a = 8'haa;
+            i_b = 8'h55;
+            
+            #100;
+            i_a = 8'h11;
+            i_b = 8'h22;
+        end
+    #10;
+    
+    $finish;
+    
+    end 
+    
+endmodule
 
-<div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio4/images/rca 100mhz.png" alt="Tiempo en el que se generó un error con 100MHz.">
-	
-Tiempo en el que se generó un error con 100MHz.
-	
-</div>
+module RippleCarryAdder #(parameter N = 8)(
+    input  logic [N-1:0] i_a,                  
+    input  logic [N-1:0] i_b,
+    output logic [N:0] o_suma);
+ 
+    
+    logic [N:0]   carry;                        
+    logic [N-1:0]   sum;
+   
+    assign carry[0] = 1'b0;                                               
+    
+    genvar i;                                     
+    generate
+        for (i = 0; i < N; i=i+1)             
+            begin
+                BitAdder param(              
+                .a         (i_a[i]),
+                .b         (i_b[i]),
+                .c         (carry[i]),
+                .cout      (carry[i+1]),
+                .sum       (sum[i])
+                );
+            end
+    endgenerate
+    
+    assign o_suma = {carry[N], sum};            
+endmodule
 
-Se observa que, el RCA no fue capaz de generar resultados correctos con ninguna de las dos frecuencias. Implicando que, la frecuencia de operación para el RCA desarrollado se encuentra menor a los 10MHz, ya que no puede encontrarse superior a los 100MHz porque, si bien le sobra tiempo de operación (Slack positivo), se detectó más pronto un error que cuando se detectó utilizando la frecuencia de 10MHz. Quiere decir lo anterior que, con 100MHz, el RCA genera más pronto error ya que no permite la propagación adecuada de la señal entre sus ciclos de reloj.
+```
+###5. Resultados
 
-Finalmente, se implementó un CLA de 8 bits y se comparó su tiempo de retardo con un RCA de también 8 bits:
-
-<div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio4/images/delay rca8bits 100mhz.png" alt="Tiempo en el que se generó un error con 10MHz.">
-	
-Tiempo delay para RCA de 8 bits.
-	
-</div>
-
-
-
-<div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio4/images/delay cla8bits 100mhz.png" alt="Tiempo en el que se generó un error con 100MHz.">
-	
-Tiempo delay para CLA de 8 bits.
-	
-</div>
-
-Como conclusión, al contar con menos tiempo de delay, el CLA realiza tiene menor tiempo de retardo en la propagación de la señal que un RCA.
-
-
+AGREGAR imagenes 
 
 ### 3.5 Unidad aritmética lógica (ALU)
 El modulo ALU realiza operaciones aritméticas y logicas con operandos `A` y `B` parametrizados.
