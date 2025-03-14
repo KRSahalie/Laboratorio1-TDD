@@ -126,7 +126,7 @@ endmodule
 
 - `in_0`, `in_1`, `in_2`, `in_3`: Entradas de datos al multiplexor.
 - `sel`: Entrada de 2 bits que especifica qué entrada del multiplexor se seleccionará.
-- `out`: Salida del módulo, representa el dato seleccionado por el multiplexor según la entrada `seleccion`.
+- `out`: Salida del módulo, representa el dato seleccionado por el multiplexor según la entrada `sel`.
 
 
 #### 4. Criterios de diseño
@@ -136,13 +136,13 @@ Para el diseño propuesto, se desarrolló un diagrama que ilustrata el sistema c
 La imagen adjunta ilustra a nivel de bloques el sistema:
 
 <div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio2/E2.png">
+  <img src="https://github.com/KRSahalie/Taller-de-Dise-o-Digital/blob/main/Ejercicio2/Imagenes/I1.png">
 </div>
 
 Y la tabla de verdad que determina su comportamiento corresponde a: 
 
 <div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio2/table.jpg">
+  <img src="https://github.com/KRSahalie/Taller-de-Dise-o-Digital/blob/main/Ejercicio2/Imagenes/I2.png">
 </div>
 
 
@@ -255,16 +255,11 @@ Este test bench es utilizado para verificar el comportamiento del módulo multip
 
 Luego de la definición del bucle, se instancia tres test benches con diferentes anchuras de bus (4, 8, y 16). Esto permite ejecutar la simulación para varias configuraciones de anchura del bus del módulo multiplexor en una única simulación.
 
-Luego de correr el test bench, se muestra en la terminal:
-```
-Empezando simulación para un ancho de:           4
-Empezando simulación para un ancho de:           8
-Empezando simulación para un ancho de:          16
-Simulación terminada correctamente para un ancho de:           4
-Simulación terminada correctamente para un ancho de:           8
-Simulación terminada correctamente para un ancho de:          16
-```
-
+Luego de correr el test bench, se muestra el siguiente resultado:
+<div align="center">
+  <img src="https://github.com/KRSahalie/Taller-de-Dise-o-Digital/blob/main/Ejercicio2/Imagenes/I3.png">
+</div>
+Se observan múltiples anchos de datos (4 bits, 8 bits y 16 bits), lo que sugiere que el multiplexor es parametrizable. Cada salida (out_4, out_8, out_16) parece coincidir con la entrada correspondiente seleccionada por sel[1:0]. Por medio de las transiciones se puede saber el funcionamiento del mux, en el diagrama de tiempos, los cambios en la señal de selección (sel) afectan la salida en los momentos esperados. No hay signos evidentes de propagación incorrecta de datos o glitches en los cambios de estado. Aunque hay valores "X" en las entradas, la salida no muestra comportamientos erráticos cuando sel tiene valores definidos.
 
 ### 3.3 Decodificador para display de 7 segmentos
 
@@ -858,8 +853,26 @@ endmodule
 
 Organización: Se deben plantear la tablas de verdad del sumador completo de 1 bit, así, obtener los mapas de karnaugh y plantear las ecuaciones para obtener el resultado, el RCA consiste en un ciclo del sumador anterior.
 
+Solución:
 
-### ME HACE FALTA AGREGAR LAS TABLAS DE LA VERDA
+![Gráfico de resultados](Problema%204/Imágenes/3.png)
+
+-Tabla de la verdad para la suma
+
+![Gráfico de resultados](Problema%204/Imágenes/4.png)
+
+-Mapa de Karnaugh para la suma 
+
+![Gráfico de resultados](Problema%204/Imágenes/5.png)
+
+-Tabla de la verdad  para el carry
+
+![Gráfico de resultados](Problema%204/Imágenes/6.png)
+
+-Mapa de Karnaugh para la suma
+
+![Gráfico de resultados](Problema%204/Imágenes/7.png)
+
 
 #### 5. Testbench
 ```
@@ -988,7 +1001,14 @@ endmodule
 ```
 ###5. Resultados
 
-AGREGAR imagenes 
+![Gráfico de resultados](Problema%204/Imágenes/1.png)
+
+Funcionamiento del Bit Adder
+
+![Gráfico de resultados](Problema%204/Imágenes/2.png)
+
+Funcionamiento del RCA y CLA
+
 
 ### 3.5 Unidad aritmética lógica (ALU)
 El modulo ALU realiza operaciones aritméticas y logicas con operandos `A` y `B` parametrizados.
