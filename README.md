@@ -857,16 +857,25 @@ endmodule
 #### 4. Criterios de diseño
 
 Organización: Se deben plantear la tablas de verdad del sumador completo de 1 bit, así, obtener los mapas de karnaugh y plantear las ecuaciones para obtener el resultado, el RCA consiste en un ciclo del sumador anterior.
+
 Solución:
 
 ![Gráfico de resultados](Problema%204/Imágenes/3.png)
-Tabla de la verdad para la suma
+
+-Tabla de la verdad para la suma
+
 ![Gráfico de resultados](Problema%204/Imágenes/4.png)
-Mapa de Karnaugh para la suma 
+
+-Mapa de Karnaugh para la suma 
+
 ![Gráfico de resultados](Problema%204/Imágenes/5.png)
-Tabla de la verdad  para el carry
+
+-Tabla de la verdad  para el carry
+
 ![Gráfico de resultados](Problema%204/Imágenes/6.png)
-Mapa de Karnaugh para la suma
+
+-Mapa de Karnaugh para la suma
+
 ![Gráfico de resultados](Problema%204/Imágenes/7.png)
 
 
