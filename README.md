@@ -988,7 +988,8 @@ endmodule
 ```
 ###5. Resultados
 
-AGREGAR imagenes 
+![Gráfico de resultados](Problema4/Imagenes/1.png)
+
 
 ### 3.5 Unidad aritmética lógica (ALU)
 El modulo ALU realiza operaciones aritméticas y logicas con operandos `A` y `B` parametrizados.
