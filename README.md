@@ -988,7 +988,8 @@ endmodule
 ```
 ###5. Resultados
 
-![Gráfico de resultados](Problema4/Imagenes/1.png)
+![Gráfico de resultados](Problema%204/Imágenes/1.png)
+
 
 
 ### 3.5 Unidad aritmética lógica (ALU)
