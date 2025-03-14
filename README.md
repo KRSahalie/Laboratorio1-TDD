@@ -126,7 +126,7 @@ endmodule
 
 - `in_0`, `in_1`, `in_2`, `in_3`: Entradas de datos al multiplexor.
 - `sel`: Entrada de 2 bits que especifica qué entrada del multiplexor se seleccionará.
-- `out`: Salida del módulo, representa el dato seleccionado por el multiplexor según la entrada `seleccion`.
+- `out`: Salida del módulo, representa el dato seleccionado por el multiplexor según la entrada `sel`.
 
 
 #### 4. Criterios de diseño
