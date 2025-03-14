@@ -136,13 +136,13 @@ Para el diseño propuesto, se desarrolló un diagrama que ilustrata el sistema c
 La imagen adjunta ilustra a nivel de bloques el sistema:
 
 <div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio2/E2.png">
+  <img src="https://github.com/KRSahalie/Taller-de-Dise-o-Digital/blob/main/Ejercicio2/Imagenes/I1.png">
 </div>
 
 Y la tabla de verdad que determina su comportamiento corresponde a: 
 
 <div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio2/table.jpg">
+  <img src="https://github.com/KRSahalie/Taller-de-Dise-o-Digital/blob/main/Ejercicio2/Imagenes/I2.png">
 </div>
 
 
@@ -255,16 +255,11 @@ Este test bench es utilizado para verificar el comportamiento del módulo multip
 
 Luego de la definición del bucle, se instancia tres test benches con diferentes anchuras de bus (4, 8, y 16). Esto permite ejecutar la simulación para varias configuraciones de anchura del bus del módulo multiplexor en una única simulación.
 
-Luego de correr el test bench, se muestra en la terminal:
-```
-Empezando simulación para un ancho de:           4
-Empezando simulación para un ancho de:           8
-Empezando simulación para un ancho de:          16
-Simulación terminada correctamente para un ancho de:           4
-Simulación terminada correctamente para un ancho de:           8
-Simulación terminada correctamente para un ancho de:          16
-```
-
+Luego de correr el test bench, se muestra el siguiente resultado:
+<div align="center">
+  <img src="https://github.com/KRSahalie/Taller-de-Dise-o-Digital/blob/main/Ejercicio2/Imagenes/I3.png">
+</div>
+Se observan múltiples anchos de datos (4 bits, 8 bits y 16 bits), lo que sugiere que el multiplexor es parametrizable. Cada salida (out_4, out_8, out_16) parece coincidir con la entrada correspondiente seleccionada por sel[1:0]. Por medio de las transiciones se puede saber el funcionamiento del mux, en el diagrama de tiempos, los cambios en la señal de selección (sel) afectan la salida en los momentos esperados. No hay signos evidentes de propagación incorrecta de datos o glitches en los cambios de estado. Aunque hay valores "X" en las entradas, la salida no muestra comportamientos erráticos cuando sel tiene valores definidos.
 
 ### 3.3 Decodificador para display de 7 segmentos
 
