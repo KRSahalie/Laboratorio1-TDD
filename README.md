@@ -16,79 +16,31 @@
 
 ### 3.1 Switches, botones y LEDs
 
-El módulo *abc* representa un sistema digital que lee el estado de interruptores y botones para controlar el estado de un conjunto de LEDs, apagando grupos específicos de LEDs según los botones presionados. La lógica es combinacional y la actualización de las salidas se realiza en respuesta a cambios en las entradas. Dado que la FPGA cuenta con 16 switches y 16 leds, cada uno de los leds representa el estado de los switches, y cada uno de los 4 botones se encarga de apagar un grupo de 4 leds. 
+El módulo `Nexis4` representa un sistema digital que lee el estado de interruptores y botones para controlar el estado de un conjunto de LEDs, apagando grupos específicos de LEDs según los botones presionados. La lógica es combinacional y la actualización de las salidas se realiza en respuesta a cambios en las entradas. Dado que la FPGA cuenta con 16 switches y 16 leds, cada uno de los leds representa el estado de los switches, y cada uno de los 4 botones se encarga de apagar un grupo de 4 leds. 
 
-#### 1. Encabezado del módulo
+#### 1. Módulo
 ```SystemVerilog
-module abc(
-    input wire [15:0] switches,    
-    input wire [3:0]  buttons,     
-    output reg [15:0] leds        
+module Nexis4(
+  input logic   [3:0] swt, //Switches de entrada
+  input logic	      btn, //Botones de entrada
+  
+  output logic  [3:0] led  //Leds de salida
 );
-```
-#### 2. Parámetros
-
-El módulo no posee parámetros. 
-
-#### 3. Entradas y salidas
-
-- `switches`: Entradas de los interruptores
-- `buttons`: Entrada de botones para seleccionar el grupo de interruptores
-- `leds`: Salidas a los LEDs
-
-#### 4. Criterios y restricciones de diseño
-Para llevar a cabo la implementación de esta aplicación, se requirió la configuración de los switches, LEDs y botones, los cuales funcionan tanto como entradas como salidas para el módulo. Esta configuración implicó asignar ubicaciones físicas específicas a estos componentes mediante un mapeo que se establece en el archivo de restricciones (constraints). A continuación, se detallan las asignaciones individuales para los switches, botones y LEDs, asegurando así una conexión precisa entre las variables utilizadas por el módulo y los pines físicos correspondientes en la FPGA.
-
-```SystemVerilog
-## Switches
-set_property -dict { PACKAGE_PIN V17   IOSTANDARD LVCMOS33 } [get_ports {switches[0]}]
-set_property -dict { PACKAGE_PIN V16   IOSTANDARD LVCMOS33 } [get_ports {switches[1]}]
-set_property -dict { PACKAGE_PIN W16   IOSTANDARD LVCMOS33 } [get_ports {switches[2]}]
-set_property -dict { PACKAGE_PIN W17   IOSTANDARD LVCMOS33 } [get_ports {switches[3]}]
-set_property -dict { PACKAGE_PIN W15   IOSTANDARD LVCMOS33 } [get_ports {switches[4]}]
-set_property -dict { PACKAGE_PIN V15   IOSTANDARD LVCMOS33 } [get_ports {switches[5]}]
-set_property -dict { PACKAGE_PIN W14   IOSTANDARD LVCMOS33 } [get_ports {switches[6]}]
-set_property -dict { PACKAGE_PIN W13   IOSTANDARD LVCMOS33 } [get_ports {switches[7]}]
-set_property -dict { PACKAGE_PIN V2    IOSTANDARD LVCMOS33 } [get_ports {switches[8]}]
-set_property -dict { PACKAGE_PIN T3    IOSTANDARD LVCMOS33 } [get_ports {switches[9]}]
-set_property -dict { PACKAGE_PIN T2    IOSTANDARD LVCMOS33 } [get_ports {switches[10]}]
-set_property -dict { PACKAGE_PIN R3    IOSTANDARD LVCMOS33 } [get_ports {switches[11]}]
-set_property -dict { PACKAGE_PIN W2    IOSTANDARD LVCMOS33 } [get_ports {switches[12]}]
-set_property -dict { PACKAGE_PIN U1    IOSTANDARD LVCMOS33 } [get_ports {switches[13]}]
-set_property -dict { PACKAGE_PIN T1    IOSTANDARD LVCMOS33 } [get_ports {switches[14]}]
-set_property -dict { PACKAGE_PIN R2    IOSTANDARD LVCMOS33 } [get_ports {switches[15]}]
-
-
-## LEDs
-set_property -dict { PACKAGE_PIN U16   IOSTANDARD LVCMOS33 } [get_ports {leds[0]}]
-set_property -dict { PACKAGE_PIN E19   IOSTANDARD LVCMOS33 } [get_ports {leds[1]}]
-set_property -dict { PACKAGE_PIN U19   IOSTANDARD LVCMOS33 } [get_ports {leds[2]}]
-set_property -dict { PACKAGE_PIN V19   IOSTANDARD LVCMOS33 } [get_ports {leds[3]}]
-set_property -dict { PACKAGE_PIN W18   IOSTANDARD LVCMOS33 } [get_ports {leds[4]}]
-set_property -dict { PACKAGE_PIN U15   IOSTANDARD LVCMOS33 } [get_ports {leds[5]}]
-set_property -dict { PACKAGE_PIN U14   IOSTANDARD LVCMOS33 } [get_ports {leds[6]}]
-set_property -dict { PACKAGE_PIN V14   IOSTANDARD LVCMOS33 } [get_ports {leds[7]}]
-set_property -dict { PACKAGE_PIN V13   IOSTANDARD LVCMOS33 } [get_ports {leds[8]}]
-set_property -dict { PACKAGE_PIN V3    IOSTANDARD LVCMOS33 } [get_ports {leds[9]}]
-set_property -dict { PACKAGE_PIN W3    IOSTANDARD LVCMOS33 } [get_ports {leds[10]}]
-set_property -dict { PACKAGE_PIN U3    IOSTANDARD LVCMOS33 } [get_ports {leds[11]}]
-set_property -dict { PACKAGE_PIN P3    IOSTANDARD LVCMOS33 } [get_ports {leds[12]}]
-set_property -dict { PACKAGE_PIN N3    IOSTANDARD LVCMOS33 } [get_ports {leds[13]}]
-set_property -dict { PACKAGE_PIN P1    IOSTANDARD LVCMOS33 } [get_ports {leds[14]}]
-set_property -dict { PACKAGE_PIN L1    IOSTANDARD LVCMOS33 } [get_ports {leds[15]}]
-
-##Buttons
-set_property -dict { PACKAGE_PIN W19   IOSTANDARD LVCMOS33 } [get_ports buttons[0]]
-set_property -dict { PACKAGE_PIN T18   IOSTANDARD LVCMOS33 } [get_ports buttons[1]]
-set_property -dict { PACKAGE_PIN T17   IOSTANDARD LVCMOS33 } [get_ports buttons[2]]
-set_property -dict { PACKAGE_PIN U17   IOSTANDARD LVCMOS33 } [get_ports buttons[3]]
-
+  
+  assign led[0] = btn ? 1'b0 : swt[0]; //Asignaciones para cada uno de los switches, botones y leds.
+  assign led[1] = btn ? 1'b0 : swt[1];
+  assign led[2] = btn ? 1'b0 : swt[2];
+  assign led[3] = btn ? 1'b0 : swt[3];
+endmodule
 ```
 
-La siguiente imagen muestra de manera gráfica el mapeo entre los botones y los leds, donde al lado izquierdo del bloque se encuentran las entradas y al lado derecho las salidas.
+#### 2. Criterios y restricciones de diseño
+Para llevar a cabo la implementación de esta aplicación, se requirió la configuración de los switches, LEDs y botones, los cuales funcionan tanto como entradas como salidas para el módulo. Se usaron funciones condicionales para asignar el botón a 4 switches y 4 LEDs.
 
-<img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio1/E1.png">
+Para los constraints, se utilizó una misma función del sistema que, al crear una síntesis, una implementación y el generador bitstream, emplea una ventana llamada I/O Ports, donde se asigna manualmente cada uno de los puertos de la FPGA utilizada. De esta manera, se genera un constraint específico para las necesidades expuestas en el código TOP, junto con sus instancias del código.
 
+#### 3. Testbench y Implementación en la FPGA
+Con el testbech ya funcionando, en el se simulan los switches de entrada, las led salida y los botones en ciertos caso se procedio a probarlo en la FPGA. El resultado fue satisfactorio, cada uno de los switches prendia su respectivo led y los botones apagaban los 4 leds que se le asignaron. 
 
 ### 3.2 Multiplexor 4 to 1
 
@@ -1036,7 +988,7 @@ parameter n = 4)
 ```
 #### 2. Criterios de diseño
 
-ara el funcionamiento de la ALU, se utiliza un bloque `always_comb`, el cual, mediante un case, decide qué operación seleccionar dependiendo de la entrada `ALU_control`. De esta forma, la ALU sabe qué operación realizar.
+Para el funcionamiento de la ALU, se utiliza un bloque `always_comb`, el cual, mediante un case, decide qué operación seleccionar dependiendo de la entrada `ALU_control`. De esta forma, la ALU sabe qué operación realizar.
 
 Para realizar las operaciones, se optó por utilizar un sistema de decisiones mediante un código: `resultado = (condicional) ? valor_si_cumple : valor_sino_cumple;`. Por medio de este código, se usaron condicionales afectados por la entrada binaria `ALUFlagsIn`. Esta entrada decide algunos cambios dentro del código, como por ejemplo qué entrada usar para ciertas operaciones o con qué valor binario rellenar en los corrimientos. De este modo, tenía poder sobre algunas opciones que afectaban el resultado.
 
@@ -1125,9 +1077,11 @@ endmodule
 En la siguientes imagenes se muestran los resultados de la simulaciones obtenidas.
 
 ![Resultado de las operacion con ALUFlagsIn=0](ejercicio5/Imagenes/Alu_0.png)
+
 Resultado de las operacion con ALUFlagsIn=0
 
 ![Resultado de las operacion con ALUFlagsIn=1](ejercicio5/Imagenes/Alu_1.png)
+
 Resultado de las operacion con ALUFlagsIn=1
 
 
