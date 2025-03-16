@@ -969,7 +969,7 @@ La ALU tiene una entrada `ALUFlagIn` la cual tiene diferentes propositos segun l
 
 El resultado de la operación se le  salida `result`, mientras que la salida `ALUFlags` muestra cuando el resultado de la operación es 0. Finalmente se tiene `C` que es el bit de acarreo para cualquier suma o resta y para mostra cual fue el último bit que se eliminó en el corrimiento. La siguiente imagen muestra las salida y entradas de la ALU.
 
-![ALU](ejercicio5/Imagenes/n.png=)
+![ALU](ejercicio5/Imagenes/n.png)
  
 #### 1. Encabezado del módulo
 ```SystemVerilog
