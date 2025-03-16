@@ -1124,8 +1124,8 @@ endmodule
 ```
 En la siguiente imagen se muestra los resultados de la simulación obtenida.
 
-![Resultado de las operacion con ALUFlagsIn=1](problema5/Imagenes/ALU_0)
-![Resultado de las operacion con ALUFlagsIn=1](problema5/Imagenes/ALU_1)
+![Resultado de las operacion con ALUFlagsIn=0](ejercicio5/Imagenes/Alu_0.png)
+![Resultado de las operacion con ALUFlagsIn=1](ejercicio5/Imagenes/Alu_1.png)
 
 
 De estas imagenes podemos observar que los resultados son correctos, el unico inconveniente es que el valor `C` no se pudo controlar como se esperaba, debido a que no se econtro una forma que pudiera cambiar el valor a 0 cada vez que no se necesitaba, no obstante si funciona cuando se tiene que utilizar nada más que mantiene su valor anterior.
