@@ -967,7 +967,9 @@ El modulo ALU realiza operaciones aritméticas y logicas con operandos `A` y `B`
 
 La ALU tiene una entrada `ALUFlagIn` la cual tiene diferentes propositos segun la operación que se elija mediante el Alu_control. Para suma y resta de complemento A2 corresponde al carry de entrada, donde indica si hay acarreo de entrada, para el `NOT`, `Incremento` y `Decremento` dependiendo del valor binario 0 o 1 especifíca cual operando (A o B) se debe usar además menciona que bit (0 o 1) se agrega en los corrimientos de bits. Para los demás no tiene ninguna influencia. 
 
-El resultado de la operación se le  salida `result`, mientras que la salida `ALUFlags` muestra cuando el resultado de la operación es 0. Finalmente se tiene `C` que es el bit de acarreo para cualquier suma o resta y para mostra cual fue el último bit que se eliminó en el corrimiento. 
+El resultado de la operación se le  salida `result`, mientras que la salida `ALUFlags` muestra cuando el resultado de la operación es 0. Finalmente se tiene `C` que es el bit de acarreo para cualquier suma o resta y para mostra cual fue el último bit que se eliminó en el corrimiento. La siguiente imagen muestra las salida y entradas de la ALU.
+
+![ALU](ejercicio5/Imagenes/n.png=)
  
 #### 1. Encabezado del módulo
 ```SystemVerilog
