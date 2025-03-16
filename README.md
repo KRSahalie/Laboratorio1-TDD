@@ -1011,47 +1011,37 @@ Funcionamiento del RCA y CLA
 
 
 ### 3.5 Unidad aritmética lógica (ALU)
-El modulo ALU realiza operaciones aritméticas y logicas con operandos `A` y `B` parametrizados.
-La entrada `alucont` toma un operador aritmetico o lgico para los cuales, cada oprador tiene un código binario asignado, de esta forma se indica a la ALU el tipo de operación que realice.
-La ALU tiene una entrada `flagin` la cual corresponde al carry de entrada el cual indica a las operaciones suma y resta el si hay acarreo de entrada y tambien de acuerdo al valor binario 0 o 1 indica a la operación `NOT` cual operando negar y a las operaciones de `Incremento` y `Decremento` a cual operando deben aplicar dicha operación.
-El resultado de la operación es dado mediente salida `aluresult`, mientras que la salida `flagout` contiene los bits de acarreo.
+El modulo ALU realiza operaciones aritméticas y logicas con operandos `A` y `B` parametrizados. La entrada `Alu_control` permite 4 bits representados del 1 hasta el 9 en hexadecimal que dictan cual sera la operación que se usara. 
+
+La ALU tiene una entrada `ALUFlagIn` la cual tiene diferentes propositos segun la operación que se elija mediante el Alu_control. Para suma y resta de complemento A2 corresponde al carry de entrada, donde indica si hay acarreo de entrada, para el `NOT`, `Incremento` y `Decremento` dependiendo del valor binario 0 o 1 especifíca cual operando (A o B) se debe usar además menciona que bit (0 o 1) se agrega en los corrimientos de bits. Para los demás no tiene ninguna influencia. 
+
+El resultado de la operación se le  salida `result`, mientras que la salida `ALUFlags` muestra cuando el resultado de la operación es 0. Finalmente se tiene `C` que es el bit de acarreo para cualquier suma o resta y para mostra cual fue el último bit que se eliminó en el corrimiento. 
  
 #### 1. Encabezado del módulo
 ```SystemVerilog
-module module_ALU #(parameter N = 4)// se crea una parametrizacion del modulo ALU
+`timescale 1ns / 1ps
+
+module Alu #(
+parameter n = 4)
 (
-    
-    input logic [N-1:0]    A_i, //Entada del operando A 
-    input logic [N-1:0]    B_i, //Entrada del operando B 
-    
-    input logic [3:0]      alucont_i, //Entrada de control 
-    input logic            flagin_i,// Entrada del carry de entrada
-    
-    output logic [N-1:0]   aluresult_o,// Salida del resultado
-    output logic           flagout_o,// Salida del carry de salida
-    output logic           flagz_o// Salida de la bandera z
-  
-);
+ input logic [n-1:0] A,
+ input logic [n-1:0] B,
+ input logic [3:0] Alu_control,
+ input logic       ALUFlagsIn, 
+ 
+ output logic [n-1:0] result,
+ output logic       ALUFlags,
+ output logic       C
+    ); 
 ```
-#### 2. Parámetros
+#### 2. Criterios de diseño
 
-`N`: Tamaño de las entradas y salida de resultado
+ara el funcionamiento de la ALU, se utiliza un bloque `always_comb`, el cual, mediante un case, decide qué operación seleccionar dependiendo de la entrada `ALU_control`. De esta forma, la ALU sabe qué operación realizar.
 
-#### 3. Entradas y salidas
+Para realizar las operaciones, se optó por utilizar un sistema de decisiones mediante un código: `resultado = (condicional) ? valor_si_cumple : valor_sino_cumple;`. Por medio de este código, se usaron condicionales afectados por la entrada binaria `ALUFlagsIn`. Esta entrada decide algunos cambios dentro del código, como por ejemplo qué entrada usar para ciertas operaciones o con qué valor binario rellenar en los corrimientos. De este modo, tenía poder sobre algunas opciones que afectaban el resultado.
 
-- `A_i`: Entada del operando A
-- `B_i`: Entrada del operando B 
-- `alucont_i`: Entrada de control 
-- `flagin_i`: Entrada del carry de entrada.
-- `aluresult_o`: Salida del resultado
-- ` flagout_o`: Salida del carry de salida
-- `flagz_o`: Salida de la bandera z
+Para los resultados de suma y resta en complemento A2, se usó `signed()` para hacerle entender a la máquina que es un grupo de bits con signo. Para otros casos lógicos, se utilizaron los valores conocidos para AND, OR y XOR. Se agregó un diseño lógico para los corrimientos de bits y otro con una resta cumple con lo solicitado. Finalmente, se agregó una salida extra llamada `C` para obtener los bits de carry y los bits eliminados por el corrimiento de bits por medio de un concatenación de salida donde el bit más significativo caia en `C` y los todos los demás en `result`. 
 
-
-#### 4. Criterios de diseño
-
-Para el funcionamiento de la ALU se utiliza un bloque `always_comb` el cual mediante la función `case` se puede cambiar entre las distintas operaciones y seleccionar la operación indicada por la entrada `alucont`, de esta forma la ALU sabe cual operación realizar.
-De acuerdo al diagrama de bloques del diseño, se tienen las entradas `A_i` y `B_i` las cuales corresponden a los operandos que se ingresan a la ALU y la entrada `alucont_i` me diante la cual se indica la operación y la entrada `flagin_i` la cual corresponde al acarreo de salida e indica a las operaciones de  `NOT`, `Incremento` y `Decremento` cual de los operandos aplicar una de estas operaciones según se haya indicado por la entrada `alucont_i`.
 
 <div align="center">
 <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio5/Imagenes/DiagramaBloque.png" alt="Diagrama de bloques ALU" width="500" >
@@ -1061,7 +1051,7 @@ Dentro del bloque `always_comb` se una un `default` para los codigos binarios qu
 
 Al final del bloque  `always_comb` se describe la logica mediante  `if` y  `else` para la salida `flagz`.
 
-#### 5. Testbench
+#### 3. Testbench
 
 Se hace un testbench para simular las distintas operaciones de la ALU.
 EL testbench que se realiza utiliza un valor aleatorio para los operandos `A_i` y `B_i` y para la entrada `flagin`, para el caso de la entrada `alucont` se especifica el código binario respectavo de cada operación para de esta forma simular todas la operaciones.
