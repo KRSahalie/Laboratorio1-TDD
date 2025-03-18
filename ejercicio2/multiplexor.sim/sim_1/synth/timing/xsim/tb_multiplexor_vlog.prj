@@ -1,9 +1,0 @@
-# compile verilog/system verilog design source files
-verilog xil_defaultlib  \
-"tb_multiplexor_time_synth.v" \
-
-sv xil_defaultlib  \
-"../../../../../multiplexor.srcs/sim_1/new/multiplexor_tb.sv" \
-
-# Do not sort compile order
-nosort
