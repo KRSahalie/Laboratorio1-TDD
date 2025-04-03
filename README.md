@@ -245,7 +245,7 @@ La siguiente tabla muestra la relación entre los números decimales, su represe
 Antes de empezar con el desarrollo del ejercicio se crea un diagrama de bloques para representar el orden del circuito combinacional, para ello se identifican las entradas y salidas, ademas de la lógica para llegar al resultado. 
 
 <div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio3/Imagenes/Diagrama%20de%20bloques%20Parte%201.png" alt="Diagrama de bloques Parte 1">
+  <img src="https://github.com/KRSahalie/Laboratorio1-TDD/blob/main/ejercicio3/Imagenes/Diagrama%20de%20bloques%20Parte%201.png">
 </div>
 
 #### 1.  Encabezado del módulo
@@ -312,7 +312,7 @@ endmodule
 La simulación se puede ver en la imagen siguiente: 
 
 <div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio3/Imagenes/TB%201%20Se%C3%B1ales.png">
+  <img src="https://github.com/KRSahalie/Laboratorio1-TDD/blob/main/ejercicio3/Imagenes/TB%201%20Se%C3%B1ales.png">
 </div>
 
 Y los valores de la consola, correctos en cada prueba se miran a continuación:
@@ -341,7 +341,7 @@ La segunda parte del ejercicio del decodificador consiste en modificar el primer
 Antes de empezar con el desarrollo del ejercicio se crea un diagrama de bloques para representar el orden del circuito combinacional, para ello se identifican las entradas y salidas, ademas de la lógica para llegar al resultado. 
 
 <div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio3/Imagenes/Diagrama%20de%20bloques%20parte%202.png">
+  <img src="https://github.com/KRSahalie/Laboratorio1-TDD/blob/main/ejercicio3/Imagenes/Diagrama%20de%20bloques%20parte%202.png">
 </div>
 
 #### Tabla de conversión múltiple:
@@ -611,11 +611,11 @@ endmodule
 Las señales de la simulación se pueden ver en las siguientes imágenes:
 
 <div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio3/Imagenes/TB%202.1.png">
+  <img src="https://github.com/KRSahalie/Laboratorio1-TDD/blob/main/ejercicio3/Imagenes/TB%202.1.png">
 </div>
 
 <div align="center">
-  <img src="https://github.com/EL3313/laboratorio1-grupo-6/blob/main/ejercicio3/Imagenes/TB%202.2.png">
+  <img src="https://github.com/KRSahalie/Laboratorio1-TDD/blob/main/ejercicio3/Imagenes/TB%202.2.png">
 </div>
 
 Los resultados en la consola son los siguientes:
